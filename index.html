@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SpendWise - Daily Expense Tracker</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    /* Header */
+    header {
+      background: #0f172a;
+      color: white;
+      padding: 20px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 26px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+    }
+
+    nav a:hover {
+      color: #38bdf8;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 50px 20px;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #dbeafe;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      width: 90%;
+      max-width: 1100px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h3 {
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+
+    .amount {
+      font-size: 30px;
+      font-weight: bold;
+      color: #0f172a;
+    }
+
+    /* Main container */
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    /* Form */
+    .expense-form {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .expense-form h2 {
+      margin-bottom: 20px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #2563eb;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .add-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .add-btn:hover {
+      background: #1d4ed8;
+    }
+
+    /* Expenses */
+    .expenses-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .clear-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
+    .clear-btn:hover {
+      background: #dc2626;
+    }
+
+    .expense-list {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+    }
+
+    .category {
+      padding: 5px 10px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: #fecaca;
+    }
+
+    .no-expenses {
+      text-align: center;
+      padding: 30px;
+      color: #64748b;
+    }
+
+    /* Chart */
+    .chart-section {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 40px;
+    }
+
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 250px;
+      margin-top: 30px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+
+    .bar-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      width: 12%;
+    }
+
+    .bar {
+      width: 45px;
+      background: linear-gradient(#38bdf8, #2563eb);
+      border-radius: 6px 6px 0 0;
+      min-height: 3px;
+      transition: height 0.5s;
+    }
+
+    .bar-label {
+      margin-top: 8px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .bar-value {
+      font-size: 11px;
+      margin-bottom: 5px;
+      color: #475569;
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: #94a3b8;
+      text-align: center;
+      padding: 25px;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav a {
+        margin: 0 8px;
+      }
+
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full-width {
+        grid-column: auto;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .chart {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+
+    <div class="logo">
+      SpendWise
+    </div>
+
+    <nav>
+      <a href="#">Home</a>
+      <a href="#add-expense">Add Expense</a>
+      <a href="#expenses">Expenses</a>
+    </nav>
+
+  </header>
+
+
+  <!-- Hero -->
+  <section class="hero">
+
+    <h1>Daily Expense Tracker</h1>
+
+    <p>
+      Track your daily spending and manage your money easily.
+    </p>
+
+  </section>
+
+
+  <!-- Dashboard -->
+  <section class="dashboard">
+
+    <div class="card">
+      <h3>Today's Expense</h3>
+      <div class="amount" id="todayTotal">₹0.00</div>
+    </div>
+
+    <div class="card">
+      <h3>This Month</h3>
+      <div class="amount" id="monthTotal">₹0.00</div>
+    </div>
+
+    <div class="card">
+      <h3>Total Expenses</h3>
+      <div class="amount" id="grandTotal">₹0.00</div>
+    </div>
+
+  </section>
+
+
+  <main class="container">
+
+    <!-- Add Expense -->
+    <section class="expense-form" id="add-expense">
+
+      <h2>➕ Add New Expense</h2>
+
+      <form id="expenseForm">
+
+        <div class="form-grid">
+
+          <div>
+            <label>Amount</label>
+            <input
+              type="number"
+              id="amount"
+              placeholder="Enter amount"
+              min="0"
+              step="0.01"
+              required
+            >
+          </div>
+
+          <div>
+            <label>Date</label>
+            <input
+              type="date"
+              id="date"
+              required
+            >
+          </div>
+
+          <div>
+            <label>Category</label>
+
+            <select id="category" required>
+
+              <option value="">Select Category</option>
+              <option value="Food">🍔 Food</option>
+              <option value="Travel">🚗 Travel</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Bills">💡 Bills</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Health">💊 Health</option>
+              <option value="Education">📚 Education</option>
+              <option value="Other">📌 Other</option>
+
+            </select>
+          </div>
+
+          <div>
+            <label>Description</label>
+
+            <input
+              type="text"
+              id="description"
+              placeholder="e.g. Lunch at restaurant"
+              required
+            >
+          </div>
+
+        </div>
+
+        <button type="submit" class="add-btn">
+          Add Expense
+        </button>
+
+      </form>
+
+    </section>
+
+
+    <!-- Expense List -->
+    <section class="expenses-section" id="expenses">
+
+      <div class="section-header">
+
+        <h2>📋 Recent Expenses</h2>
+
+        <button
+          class="clear-btn"
+          onclick="clearAllExpenses()"
+        >
+          Clear All
+        </button>
+
+      </div>
+
+      <div class="expense-list">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="expenseTable">
+          </tbody>
+
+        </table>
+
+        <div
+          id="noExpenses"
+          class="no-expenses"
+        >
+          No expenses added yet.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- Weekly Chart -->
+    <section class="chart-section">
+
+      <h2>📊 Weekly Spending</h2>
+
+      <div class="chart" id="chart">
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Mon</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Tue</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Wed</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Thu</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Fri</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Sat</span>
+        </div>
+
+        <div class="bar-container">
+          <span class="bar-value">₹0</span>
+          <div class="bar" style="height:3px;"></div>
+          <span class="bar-label">Sun</span>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer>
+
+    <p>
+      © 2026 SpendWise | Daily Expense Tracker
+    </p>
+
+  </footer>
+
+
+  <script>
+
+    // Get saved expenses
+    let expenses =
+      JSON.parse(localStorage.getItem("expenses")) || [];
+
+
+    // Set today's date automatically
+    document.getElementById("date").value =
+      new Date().toISOString().split("T")[0];
+
+
+    // Add Expense
+    document
+      .getElementById("expenseForm")
+      .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const amount =
+          parseFloat(document.getElementById("amount").value);
+
+        const date =
+          document.getElementById("date").value;
+
+        const category =
+          document.getElementById("category").value;
+
+        const description =
+          document.getElementById("description").value;
+
+
+        const expense = {
+
+          id: Date.now(),
+
+          amount: amount,
+
+          date: date,
+
+          category: category,
+
+          description: description
+
+        };
+
+
+        expenses.push(expense);
+
+        saveExpenses();
+
+        displayExpenses();
+
+        updateDashboard();
+
+        updateChart();
+
+
+        // Reset form
+        document.getElementById("expenseForm").reset();
+
+        document.getElementById("date").value =
+          new Date().toISOString().split("T")[0];
+
+      });
+
+
+    // Save expenses
+    function saveExpenses() {
+
+      localStorage.setItem(
+        "expenses",
+        JSON.stringify(expenses)
+      );
+
+    }
+
+
+    // Display expenses
+    function displayExpenses() {
+
+      const table =
+        document.getElementById("expenseTable");
+
+      const noExpenses =
+        document.getElementById("noExpenses");
+
+
+      table.innerHTML = "";
+
+
+      if (expenses.length === 0) {
+
+        noExpenses.style.display = "block";
+
+        return;
+
+      }
+
+
+      noExpenses.style.display = "none";
+
+
+      // Show newest first
+      const sortedExpenses =
+        [...expenses].sort(
+          (a, b) =>
+            new Date(b.date) - new Date(a.date)
+        );
+
+
+      sortedExpenses.forEach(function(expense) {
+
+        const row =
+          document.createElement("tr");
+
+
+        row.innerHTML = `
+
+          <td>${formatDate(expense.date)}</td>
+
+          <td>
+            <span class="category">
+              ${expense.category}
+            </span>
+          </td>
+
+          <td>${escapeHTML(expense.description)}</td>
+
+          <td>
+            <strong>
+              ₹${expense.amount.toFixed(2)}
+            </strong>
+          </td>
+
+          <td>
+            <button
+              class="delete-btn"
+              onclick="deleteExpense(${expense.id})"
+            >
+              Delete
+            </button>
+          </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+      });
+
+    }
+
+
+    // Format date
+    function formatDate(dateString) {
+
+      const date =
+        new Date(dateString + "T00:00:00");
+
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+
+    }
+
+
+    // Prevent HTML injection in descriptions
+    function escapeHTML(text) {
+
+      const div =
+        document.createElement("div");
+
+      div.textContent = text;
+
+      return div.innerHTML;
+
+    }
+
+
+    // Delete expense
+    function deleteExpense(id) {
+
+      expenses =
+        expenses.filter(
+          expense => expense.id !== id
+        );
+
+      saveExpenses();
+
+      displayExpenses();
+
+      updateDashboard();
+
+      updateChart();
+
+    }
+
+
+    // Clear all expenses
+    function clearAllExpenses() {
+
+      if (expenses.length === 0) {
+        return;
+      }
+
+
+      const confirmed =
+        confirm(
+          "Are you sure you want to delete all expenses?"
+        );
+
+
+      if (confirmed) {
+
+        expenses = [];
+
+        saveExpenses();
+
+        displayExpenses();
+
+        updateDashboard();
+
+        updateChart();
+
+      }
+
+    }
+
+
+    // Update dashboard
+    function updateDashboard() {
+
+      const today =
+        new Date().toISOString().split("T")[0];
+
+      const currentMonth =
+        new Date().toISOString().slice(0, 7);
+
+
+      let todayTotal = 0;
+
+      let monthTotal = 0;
+
+      let grandTotal = 0;
+
+
+      expenses.forEach(function(expense) {
+
+        const amount =
+          Number(expense.amount);
+
+
+        grandTotal += amount;
+
+
+        if (expense.date === today) {
+
+          todayTotal += amount;
+
+        }
+
+
+        if (expense.date.startsWith(currentMonth)) {
+
+          monthTotal += amount;
+
+        }
+
+      });
+
+
+      document.getElementById("todayTotal")
+        .textContent =
+        "₹" + todayTotal.toFixed(2);
+
+
+      document.getElementById("monthTotal")
+        .textContent =
+        "₹" + monthTotal.toFixed(2);
+
+
+      document.getElementById("grandTotal")
+        .textContent =
+        "₹" + grandTotal.toFixed(2);
+
+    }
+
+
+    // Update weekly chart
+    function updateChart() {
+
+      const chart =
+        document.getElementById("chart");
+
+      const containers =
+        chart.querySelectorAll(".bar-container");
+
+
+      const days =
+        ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+
+      const totals =
+        [0, 0, 0, 0, 0, 0, 0];
+
+
+      const today =
+        new Date();
+
+
+      // Calculate Monday of current week
+      const monday =
+        new Date(today);
+
+      const day =
+        monday.getDay();
+
+      const difference =
+        day === 0 ? -6 : 1 - day;
+
+      monday.setDate(
+        monday.getDate() + difference
+      );
+
+
+      expenses.forEach(function(expense) {
+
+        const expenseDate =
+          new Date(expense.date + "T00:00:00");
+
+
+        for (let i = 0; i < 7; i++) {
+
+          const dayDate =
+            new Date(monday);
+
+          dayDate.setDate(
+            monday.getDate() + i
+          );
+
+
+          if (
+            expenseDate.toDateString() ===
+            dayDate.toDateString()
+          ) {
+
+            totals[i] += Number(expense.amount);
+
+          }
+
+        }
+
+      });
+
+
+      const max =
+        Math.max(...totals, 1);
+
+
+      containers.forEach(function(container, index) {
+
+        const bar =
+          container.querySelector(".bar");
+
+        const value =
+          container.querySelector(".bar-value");
+
+        const height =
+          (totals[index] / max) * 200;
+
+
+        bar.style.height =
+          Math.max(height, 3) + "px";
+
+
+        value.textContent =
+          "₹" + totals[index].toFixed(0);
+
+      });
+
+    }
+
+
+    // Load website
+    displayExpenses();
+
+    updateDashboard();
+
+    updateChart();
+
+  </script>
+
+</body>
+</html>
